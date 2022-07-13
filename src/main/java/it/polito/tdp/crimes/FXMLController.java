@@ -7,6 +7,7 @@ package it.polito.tdp.crimes;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import it.polito.tdp.crimes.model.Adiacenze;
 import it.polito.tdp.crimes.model.Model;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -25,10 +26,10 @@ public class FXMLController {
     private URL location;
 
     @FXML // fx:id="boxCategoria"
-    private ComboBox<?> boxCategoria; // Value injected by FXMLLoader
+    private ComboBox<String> boxCategoria; // Value injected by FXMLLoader
 
     @FXML // fx:id="boxMese"
-    private ComboBox<?> boxMese; // Value injected by FXMLLoader
+    private ComboBox<Integer> boxMese; // Value injected by FXMLLoader
 
     @FXML // fx:id="btnAnalisi"
     private Button btnAnalisi; // Value injected by FXMLLoader
@@ -49,6 +50,32 @@ public class FXMLController {
 
     @FXML
     void doCreaGrafo(ActionEvent event) {
+    	txtResult.clear();
+String reato=    	this.boxCategoria.getValue();
+if(reato==null)
+{
+	this.txtResult.appendText("Selezioanre un reato dalla tendina ");
+return;	
+}
+int mese;
+try {
+	mese=this.boxMese.getValue();
+}catch(NumberFormatException e) {
+	txtResult.appendText("Selezionare un mese dalla tendina ");
+	return;
+}this.model.creaGrafo(reato,mese);
+
+txtResult.appendText("Grafo creato!\n");
+txtResult.appendText("# Vertici : " + this.model.nVertici() + "\n");
+txtResult.appendText("# Archi : " + this.model.nArchi() + "\n");
+
+double pesoMedio=this.model.pesoMedio();
+
+
+this.txtResult.appendText("peso medio: "+pesoMedio+"\n");
+for(Adiacenze a:this.model.peso()) {
+	this.txtResult.appendText(a.toString()+"\n");
+}
 
     }
 
@@ -65,5 +92,7 @@ public class FXMLController {
     
     public void setModel(Model model) {
     	this.model = model;
+    	this.boxCategoria.getItems().addAll(model.listAllReati());
+   this.boxMese.getItems().addAll(model.listAllMesi());
     }
 }
